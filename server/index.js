@@ -36,7 +36,7 @@ const verifyToken = async (req, res, next) => {
   })
 }
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.mq0mae1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.crgmj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -48,6 +48,27 @@ const client = new MongoClient(uri, {
 })
 async function run() {
   try {
+
+    // Collection 
+    const userCollection = client.db("plantNetDB") .collection("users");
+   
+    // user api 
+
+    app.post("/user/:email", async(req, res)=>{
+      const email = req.params.email
+      const user = req.body
+      const query = {email}
+      const isExist= await userCollection.findOne(query)
+      if(isExist){
+       return res.send(isExist)
+      }
+      console.log(user)
+      const result= await userCollection.insertOne({...user,
+        role: "customer",
+        timeStamp: Date.now()})
+      res.send(result)
+    })
+
     // Generate jwt token
     app.post('/jwt', async (req, res) => {
       const email = req.body
