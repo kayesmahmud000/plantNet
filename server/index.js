@@ -52,6 +52,7 @@ async function run() {
     // Collection 
     const userCollection = client.db("plantNetDB") .collection("users");
     const plantCollection= client.db("plantNetDB").collection("plants");
+    const orderCollection= client.db("plantNetDB").collection("orders");
    
     // user api 
 
@@ -99,6 +100,8 @@ async function run() {
       }
     })
 
+    // plant related Api
+
     app.get("/plants", async(req, res)=>{
       const result= await plantCollection.find().toArray()
       res.send(result)
@@ -108,6 +111,102 @@ async function run() {
       const result= await plantCollection.insertOne(plant)
       res.send(result)
     })
+
+    app.get("/plants/:id", async(req, res)=>{
+      const id= req.params.id
+      const query ={_id: new ObjectId(id)}
+      const result= await plantCollection.findOne(query)
+      res.send(result)
+    })
+
+
+    // save to order data
+    app.get("/customer-orders/:email",  verifyToken, async(req, res)=>{
+      const email= req.params.email
+
+      const query={"customer.email": email}
+      const result= await orderCollection.aggregate(
+        [ 
+          // match specific customers data only by email
+          {
+            $match :query          
+          },
+          // convert plantId string to ObjectId
+          {
+            $addFields:{
+              plantId:{$toObjectId :"$plantId"}
+
+            },
+          },
+          // go to different collection and look for data
+          {
+            $lookup:{
+              from:'plants',  //collection name
+              localField:'plantId', //local data that you want to match
+              foreignField:'_id', //foreign field nome of the same data 
+              as:'plants' //return the data as array 
+
+            }
+          },
+          {
+            $unwind: '$plants' //unwind lookup data return without array 
+          },
+          {
+            $addFields: {    //add those field in object
+              name:'$plants.name',
+              image:'$plants.image',
+              category:'$plants.category'
+            }
+          },
+          {
+            $project:{ //remove object property form order object  
+              plants:0
+            }
+          }
+        ]
+      ).toArray()
+      res.send(result)
+    })
+
+    app.post("/orders",  verifyToken, async(req, res)=>{
+      const order= req.body
+      console.log(order)
+      const result= await orderCollection.insertOne(order)
+      res.send(result)
+    })
+
+    app.patch('/order/quantity/:id', verifyToken,  async(req, res)=>{
+      const id= req.params.id
+      const {quantityToUpdate, status}= req.body
+      const filter= { _id: new ObjectId( id)}
+      let updateDoc= {
+        $inc:{
+          quantity: -quantityToUpdate
+        }
+      }
+      if( status==='increase'){
+        updateDoc={
+          $inc :{
+            quantity : quantityToUpdate
+          }
+        }
+      }
+      const result = await plantCollection.updateOne(filter, updateDoc)
+      res.send(result)
+    })
+
+    app.delete("/order/:id",  verifyToken, async(req, res)=>{
+      const id= req.params.id
+      const query= { _id : new ObjectId(id)}
+      const order= await orderCollection.findOne(query)
+      if(order.status ==='delivered'){
+        return res.status(409).send({massage: "Cannot cancel once the product is delivered"})
+      }
+      const result= await orderCollection.deleteOne(query)
+      res.send(result)
+    })
+
+
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 })
     console.log(
