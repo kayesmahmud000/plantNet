@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { TbFidgetSpinner } from "react-icons/tb"
 
-// eslint-disable-next-line react/prop-types
+
 const AddPlantForm = ({handleAddPlant, uploadBtnText, setUploadBtnText, loading}) => {
   
   return (
