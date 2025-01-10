@@ -71,6 +71,27 @@ async function run() {
       res.send(result)
     })
 
+    // manage status and role
+
+    app.patch("/user/:email", verifyToken, async(req, res)=>{
+      const email= req.params.email
+      const query= {email}
+      const user= await userCollection.findOne(query)
+      const {status}= req.body
+      if(!user || user.status=== "requested"){
+        return res.status(400).send({massage:"You have already requested , wait for some time"})
+      }
+
+      const updateDoc= {
+        $set:{
+          status:"requested"
+        }
+      }
+      
+      const result= await userCollection.updateOne(query, updateDoc)
+      res.send(result)
+    })
+
     // Generate jwt token
     app.post('/jwt', async (req, res) => {
       const email = req.body
@@ -206,6 +227,14 @@ async function run() {
       res.send(result)
     })
 
+    // role base api 
+
+    app.get('/user/role/:email', verifyToken, async(req,res)=>{
+      const email=req.params.email
+      const result= await userCollection.findOne({email})
+      res.send({role: result?.role})
+    }
+  )
 
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 })
