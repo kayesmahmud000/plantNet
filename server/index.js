@@ -51,6 +51,7 @@ async function run() {
 
     // Collection 
     const userCollection = client.db("plantNetDB") .collection("users");
+    const plantCollection= client.db("plantNetDB").collection("plants");
    
     // user api 
 
@@ -98,6 +99,15 @@ async function run() {
       }
     })
 
+    app.get("/plants", async(req, res)=>{
+      const result= await plantCollection.find().toArray()
+      res.send(result)
+    })
+    app.post("/plants",verifyToken, async(req, res)=>{
+      const plant= req.body
+      const result= await plantCollection.insertOne(plant)
+      res.send(result)
+    })
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 })
     console.log(
