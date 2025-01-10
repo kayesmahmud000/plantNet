@@ -92,7 +92,7 @@ const AddPlantForm = ({handleAddPlant, uploadBtnText, setUploadBtnText, loading}
                 <div className='flex flex-col w-max mx-auto text-center'>
                   <label>
                     <input
-                    onChange={(e)=>setUploadBtnText(e.target.files[0])}
+                    onChange={(e)=>setUploadBtnText({image:e.target.files[0], url: URL.createObjectURL(e.target.files[0])})}
                       className='text-sm cursor-pointer w-36 hidden'
                       type='file'
                       name='image'
@@ -101,7 +101,7 @@ const AddPlantForm = ({handleAddPlant, uploadBtnText, setUploadBtnText, loading}
                       hidden
                     />
                     <div className='bg-lime-500 text-white border border-gray-300 rounded font-semibold cursor-pointer p-1 px-3 hover:bg-lime-500'>
-                    {uploadBtnText.name}
+                    {uploadBtnText?.image?.name}
                     </div>
                    
                   </label>
@@ -110,10 +110,13 @@ const AddPlantForm = ({handleAddPlant, uploadBtnText, setUploadBtnText, loading}
               </div>
             </div>
             {
-             uploadBtnText && uploadBtnText.size (
-                <>
-                <img src={URL.createObjectURL(uploadBtnText)} alt="" />
-                <p>Image Size:  {uploadBtnText?.size} KB</p></>)
+             uploadBtnText && uploadBtnText?.image?.size && (
+              <div className="flex gap-10 items-center">
+                <img className="w-20" src={uploadBtnText.url} alt="" />
+                <p>Image Size:  {uploadBtnText?.image?.size} KB</p>
+                </div>
+             )
+                
              
             }
           

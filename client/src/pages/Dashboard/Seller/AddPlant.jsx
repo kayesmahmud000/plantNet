@@ -9,7 +9,7 @@ import toast from 'react-hot-toast'
 const AddPlant = () => {
   const {user}= useAuth()
   const axiosSecure= useAxiosSecure()
-  const [uploadBtnText , setUploadBtnText]= useState({name:'Upload'})
+  const [uploadBtnText , setUploadBtnText]= useState({image: {name:'Upload'}})
   const [loading ,setLoading]= useState(false)
   const handleAddPlant= async(e)=>{
     setLoading(true)
