@@ -3,8 +3,8 @@ import { FcGoogle } from 'react-icons/fc'
 import useAuth from '../../hooks/useAuth'
 import { toast } from 'react-hot-toast'
 import { TbFidgetSpinner } from 'react-icons/tb'
-import { imageUpload } from '../../api/utils'
-import axios from 'axios'
+import { imageUpload, saveUser } from '../../api/utils'
+
 
 
 
@@ -37,13 +37,10 @@ const SignUp = () => {
       await updateUserProfile(
         name, photoURL
       )
-      await axios.post(`${import.meta.env.VITE_API_URL}/user/${email}`, {
-        name:name,
-        image:photoURL,
-        email: email,
       
-      })
       console.log(result)
+      //  save the user info in db if the user is new
+     await saveUser({...result?.user, displayName: name, photoURL})
 
       navigate('/')
       toast.success('Signup Successful')
@@ -57,7 +54,9 @@ const SignUp = () => {
   const handleGoogleSignIn = async () => {
     try {
       //User Registration using google
-      await signInWithGoogle()
+    const data= await signInWithGoogle()
+    //  save the user info in db if the user is new
+    await saveUser(data.user)
 
       navigate('/')
       toast.success('Signup Successful')

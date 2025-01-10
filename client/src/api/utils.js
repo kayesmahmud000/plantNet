@@ -8,3 +8,12 @@ export const imageUpload= async imageData =>{
      const image_url= data.data.display_url
      return image_url
 }
+
+export const saveUser= async user=>{
+    await axios.post(`${import.meta.env.VITE_API_URL}/user/${user?.email}`, {
+        name:user?.displayName,
+        image:user?.photoURL,
+        email:user?.email,
+      
+      })
+}

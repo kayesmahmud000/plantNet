@@ -58,7 +58,12 @@ const AuthProvider = ({ children }) => {
         console.log(currentUser)
         // save user info
 
-      
+        // await axios.post(`${import.meta.env.VITE_API_URL}/user/${currentUser?.email}`, {
+        //   name:currentUser?.displayName,
+        //   image:currentUser?.photoURL,
+        //   email:currentUser?.email,
+        
+        // })
 
         await axios.post(`${import.meta.env.VITE_API_URL}/jwt`,
            {email: currentUser?.email},

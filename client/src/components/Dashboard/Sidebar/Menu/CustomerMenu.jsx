@@ -3,12 +3,34 @@ import { GrUserAdmin } from 'react-icons/gr'
 import MenuItem from './MenuItem'
 import { useState } from 'react'
 import BecomeSellerModal from '../../../Modal/BecomeSellerModal'
+import useAxiosSecure from '../../../../hooks/useAxiosSecure'
+import useAuth from '../../../../hooks/useAuth'
+import toast from 'react-hot-toast'
+
 const CustomerMenu = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const axiosSecure= useAxiosSecure()
+  const {user}= useAuth()
 
   const closeModal = () => {
     setIsOpen(false)
   }
+  const requestHandler=async()=>{
+    try{
+      //  patch
+      const res= await axiosSecure.patch(`/user/${user?.email}`)
+      console.log(res.data)
+      toast.success("successfully applied to become a seller")
+    }
+    catch(err){{
+      console.log(err.response.data.massage)
+      toast.error(err.response.data.massage)
+    }}
+    finally{
+      closeModal()
+    }
+  }
+ 
 
   return (
     <>
@@ -23,7 +45,7 @@ const CustomerMenu = () => {
         <span className='mx-4 font-medium'>Become A Seller</span>
       </div>
 
-      <BecomeSellerModal closeModal={closeModal} isOpen={isOpen} />
+      <BecomeSellerModal requestHandler={requestHandler} closeModal={closeModal} isOpen={isOpen} />
     </>
   )
 }
