@@ -16,12 +16,13 @@ const Statistics = () => {
   if(role === 'seller'){
   return <Navigate to={'/dashboard/my-inventory'}></Navigate>
   }
+  
   return (
     <div>
       <Helmet>
         <title>Dashboard</title>
       </Helmet>
-    {role=== 'admin'&&   <AdminStatistics />}
+    {role === 'admin' &&  <AdminStatistics />}
     </div>
   )
 }

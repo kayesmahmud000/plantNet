@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { TbFidgetSpinner } from "react-icons/tb"
+import { sortImageName } from "../../utilities"
 
 
 const AddPlantForm = ({handleAddPlant, uploadBtnText, setUploadBtnText, loading}) => {
@@ -101,7 +102,8 @@ const AddPlantForm = ({handleAddPlant, uploadBtnText, setUploadBtnText, loading}
                       hidden
                     />
                     <div className='bg-lime-500 text-white border border-gray-300 rounded font-semibold cursor-pointer p-1 px-3 hover:bg-lime-500'>
-                    {uploadBtnText?.image?.name}
+                    {/* {uploadBtnText?.image?.name} */}
+                    {sortImageName(uploadBtnText?.image)}
                     </div>
                    
                   </label>

@@ -30,6 +30,7 @@ const PurchaseModal = ({ plant, closeModal, isOpen, refetch }) => {
     price: totalPrice,
     quantity:totalQuantity,
     address:"",
+    seller: plant.seller.email,
     status:"pending"
   })
   console.log(totalQuantity)
