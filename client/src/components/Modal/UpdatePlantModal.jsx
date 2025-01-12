@@ -6,11 +6,26 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@headlessui/react'
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 
 import UpdatePlantForm from '../Form/UpdatePlantForm'
+import { imageUpload } from '../../api/utils'
 
-const UpdatePlantModal = ({ setIsEditModalOpen, isOpen }) => {
+const UpdatePlantModal = ({ setIsEditModalOpen, plant, isOpen }) => {
+   const [uploadBtnText , setUploadBtnText]= useState({image: {name:'Upload'}})
+
+  const handleUpdatePlant= async (e)=>{
+    e.preventDefault()
+     const form = e.target
+        const name= form.name.value
+        const description=form.description.value
+        const price= parseFloat(form.price.value)
+        const quantity=parseInt(form.quantity.value)
+        const category=form.category.value
+        const image =form.image.files[0]
+        const image_url= await imageUpload(image)
+    
+  }
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog
@@ -49,7 +64,7 @@ const UpdatePlantModal = ({ setIsEditModalOpen, isOpen }) => {
                   Update Plant Info
                 </DialogTitle>
                 <div className='mt-2 w-full'>
-                  <UpdatePlantForm />
+                  <UpdatePlantForm  handleUpdatePlant={handleUpdatePlant}/>
                 </div>
                 <hr className='mt-8 ' />
                 <div className='mt-2 '>

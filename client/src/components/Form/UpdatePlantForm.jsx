@@ -1,7 +1,10 @@
-const UpdatePlantForm = () => {
+import PropTypes from "prop-types"
+
+const UpdatePlantForm = ({handleUpdatePlant,  plant}) => {
+
   return (
     <div className='w-full flex flex-col justify-center items-center text-gray-800 rounded-xl bg-gray-50'>
-      <form>
+      <form onSubmit={handleUpdatePlant}>
         <div className='grid grid-cols-1 gap-10'>
           <div className='space-y-6'>
             {/* Name */}
@@ -12,6 +15,7 @@ const UpdatePlantForm = () => {
               <input
                 className='w-full px-4 py-3 text-gray-800 border border-lime-300 focus:outline-lime-500 rounded-md bg-white'
                 name='name'
+                defaultValue={plant?.name}
                 id='name'
                 type='text'
                 placeholder='Plant Name'
@@ -25,6 +29,7 @@ const UpdatePlantForm = () => {
               </label>
               <select
                 required
+                defaultValue={plant?.category}
                 className='w-full px-4 py-3 border-lime-300 focus:outline-lime-500 rounded-md bg-white'
                 name='category'
               >
@@ -42,6 +47,7 @@ const UpdatePlantForm = () => {
 
               <textarea
                 id='description'
+                defaultValue={plant?.description}
                 placeholder='Write plant description here...'
                 className='block rounded-md focus:lime-300 w-full h-32 px-4 py-3 text-gray-800  border border-lime-300 bg-white focus:outline-lime-500 '
                 name='description'
@@ -60,6 +66,7 @@ const UpdatePlantForm = () => {
                   className='w-full px-4 py-3 text-gray-800 border border-lime-300 focus:outline-lime-500 rounded-md bg-white'
                   name='price'
                   id='price'
+                  defaultValue={plant?.price}
                   type='number'
                   placeholder='Price per unit'
                   required
@@ -75,6 +82,7 @@ const UpdatePlantForm = () => {
                   className='w-full px-4 py-3 text-gray-800 border border-lime-300 focus:outline-lime-500 rounded-md bg-white'
                   name='quantity'
                   id='quantity'
+                  defaultValue={plant?.quantity}
                   type='number'
                   placeholder='Available quantity'
                   required
@@ -116,4 +124,9 @@ const UpdatePlantForm = () => {
   )
 }
 
+UpdatePlantForm.propTypes = {
+  handleUpdatePlant: PropTypes.func,
+  plant :PropTypes.object
+ 
+}
 export default UpdatePlantForm
