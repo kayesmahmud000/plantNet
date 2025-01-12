@@ -7,17 +7,21 @@ import {
   DialogTitle,
 } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import Button from '../Shared/Button/Button'
+
 import toast from 'react-hot-toast'
 import useAuth from '../../hooks/useAuth'
-import useAxiosSecure from '../../hooks/useAxiosSecure'
-import { useNavigate } from 'react-router-dom'
+
+import {Elements} from '@stripe/react-stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
+import CheckoutForm from '../Form/CheckOutForm'
+
+// # go to the stripe web site and install npm install --save @stripe/react-stripe-js @stripe/stripe-js to client site and gate the privete  key on developer tool
+const stripePromise = loadStripe(import.meta.env.VITE_PAYMENT_PUBLIC_KEY);
 
 const PurchaseModal = ({ plant, closeModal, isOpen, refetch }) => {
   const {user}= useAuth()
   // Total Price Calculation
-  const axiosSecure= useAxiosSecure()
-  const navigate= useNavigate()
+ 
   const [totalQuantity, setTotalQuantity]= useState(1)
   const [totalPrice, setTotalPrice]= useState(plant?.price)
   const [purchaseInfo, setPurchaseInfo]= useState({
@@ -53,27 +57,7 @@ const PurchaseModal = ({ plant, closeModal, isOpen, refetch }) => {
     })
   }
   
-  const handlePurchase=async()=>{
-    console.table(purchaseInfo);
-    try{
-    await axiosSecure.post("/orders", purchaseInfo)
-     toast.success("Order Success")
-       await axiosSecure.patch(`/order/quantity/${plant._id}`, {quantityToUpdate:totalQuantity,
-        status:'decrease' 
-       })
-       refetch()
-
-       navigate("/dashboard/my-orders")
-    }catch(error){
-      console.log(error)
-
-    }
-    finally{
-      closeModal()
-    }
-    // save data to db
-
-  }
+  
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as='div' className='relative z-10' onClose={closeModal}>
@@ -159,9 +143,14 @@ const PurchaseModal = ({ plant, closeModal, isOpen, refetch }) => {
                   required
                 />
               </div>
-                <div className='mt-3'>
-                  <Button onClick={handlePurchase} label={`Pay ${totalPrice} $`}/>
-                </div>
+              <div>
+                {/* check Out From stripe */}
+
+                <Elements stripe={stripePromise}>
+                  <CheckoutForm totalQuantity={totalQuantity} closeModal={closeModal} refetch={refetch} purchaseInfo={purchaseInfo}></CheckoutForm>
+                </Elements>
+              </div>
+              
               </DialogPanel>
             </TransitionChild>
           </div>
