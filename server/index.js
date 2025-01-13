@@ -242,6 +242,30 @@ async function run() {
       const result = await plantCollection.deleteOne(query)
       res.send(result)
     })
+
+    // find the specific plant by id for update
+
+    app.get('/plant/:id', verifyToken, verifySeller , async(req, res)=>{
+      const id= req.params.id
+      const query = { _id : new ObjectId(id)}
+      const result= await plantCollection.findOne(query)
+      res.send(result)
+    })
+
+    // update the plant 
+
+    app.put('/plant/:id', verifyToken, verifySeller , async(req, res)=>{
+      const id= req.params.id
+      const filter = { _id : new ObjectId(id)}
+      const { name, description, price, quantity, category, image} = req.body 
+      const updateDoc= {
+        $set:{
+          name, description, price, quantity, category, image
+        }
+      }
+      const result= await plantCollection.updateOne(filter, updateDoc)
+      res.send(result)
+    })
     app.get("/plants", async (req, res) => {
       const result = await plantCollection.find().toArray()
       res.send(result)
