@@ -9,6 +9,7 @@ const PlantDataRow = ({plant, refetch}) => {
   let [isOpen, setIsOpen] = useState(false)
   const axiosSecure= useAxiosSecure()
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [plants, setPlants]= useState({})
   const {
     name,
     image,
@@ -40,7 +41,20 @@ const PlantDataRow = ({plant, refetch}) => {
       closeModal()
     }
   }
+  const handleUpdateBtn= async( id)=>{
+    setIsEditModalOpen(true)
+    console.log(id)
+    try{
+      //patch the data of specific id
+      const res= await axiosSecure.get(`/plant/${id}`)
+      setPlants(res.data)
+    }catch(err){
+      console.log(err)
+    }
 
+  }
+
+  
   
   return (
     <tr>
@@ -85,7 +99,7 @@ const PlantDataRow = ({plant, refetch}) => {
       </td>
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
         <span
-          onClick={() => setIsEditModalOpen(true)}
+          onClick={() =>handleUpdateBtn(_id) }
           className='relative cursor-pointer inline-block px-3 py-1 font-semibold text-green-900 leading-tight'
         >
           <span
@@ -95,8 +109,9 @@ const PlantDataRow = ({plant, refetch}) => {
           <span className='relative'>Update</span>
         </span>
         <UpdatePlantModal
-        plant={plant}
+        plants={plants}
           isOpen={isEditModalOpen}
+          refetch={refetch}
           setIsEditModalOpen={setIsEditModalOpen}
         />
       </td>

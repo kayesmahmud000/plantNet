@@ -10,11 +10,16 @@ import { Fragment, useState } from 'react'
 
 import UpdatePlantForm from '../Form/UpdatePlantForm'
 import { imageUpload } from '../../api/utils'
+import useAxiosSecure from '../../hooks/useAxiosSecure'
 
-const UpdatePlantModal = ({ setIsEditModalOpen, plant, isOpen }) => {
-   const [uploadBtnText , setUploadBtnText]= useState({image: {name:'Upload'}})
+const UpdatePlantModal = ({ setIsEditModalOpen, plants, isOpen , refetch}) => {
+   const [updateImage , setUpdateImage]= useState({image: {name:'Upload'}})
+   const axiosSecure= useAxiosSecure()
+   const [loading ,setLoading]= useState(false)
 
   const handleUpdatePlant= async (e)=>{
+    setLoading(true)
+
     e.preventDefault()
      const form = e.target
         const name= form.name.value
@@ -24,6 +29,21 @@ const UpdatePlantModal = ({ setIsEditModalOpen, plant, isOpen }) => {
         const category=form.category.value
         const image =form.image.files[0]
         const image_url= await imageUpload(image)
+        console.log({name, description , price, quantity, category , image_url})
+        const updatePlant= {
+          name, description, price, quantity, category, image:image_url,
+        }
+
+        try{
+          // update the plant 
+          await axiosSecure.put(`/plant/${plants._id}` , updatePlant)
+          refetch()
+        }catch(err){
+          console.log(err)
+        }finally{
+          setLoading(false)
+          setIsEditModalOpen(false)
+        }
     
   }
   return (
@@ -64,7 +84,7 @@ const UpdatePlantModal = ({ setIsEditModalOpen, plant, isOpen }) => {
                   Update Plant Info
                 </DialogTitle>
                 <div className='mt-2 w-full'>
-                  <UpdatePlantForm  handleUpdatePlant={handleUpdatePlant}/>
+                  <UpdatePlantForm loading={loading} plants={plants} setUpdateImage={setUpdateImage} updateImage={updateImage}  handleUpdatePlant={handleUpdatePlant}/>
                 </div>
                 <hr className='mt-8 ' />
                 <div className='mt-2 '>
@@ -88,6 +108,8 @@ const UpdatePlantModal = ({ setIsEditModalOpen, plant, isOpen }) => {
 UpdatePlantModal.propTypes = {
   setIsEditModalOpen: PropTypes.func,
   isOpen: PropTypes.bool,
+  plants:PropTypes.object,
+  refetch:PropTypes.func
 }
 
 export default UpdatePlantModal

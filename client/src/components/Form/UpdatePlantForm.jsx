@@ -1,6 +1,9 @@
+/* eslint-disable react/prop-types */
 import PropTypes from "prop-types"
+import { sortImageName } from "../../utilities"
+import { TbFidgetSpinner } from "react-icons/tb"
 
-const UpdatePlantForm = ({handleUpdatePlant,  plant}) => {
+const UpdatePlantForm = ({handleUpdatePlant,loading, updateImage,setUpdateImage,  plants}) => {
 
   return (
     <div className='w-full flex flex-col justify-center items-center text-gray-800 rounded-xl bg-gray-50'>
@@ -15,7 +18,7 @@ const UpdatePlantForm = ({handleUpdatePlant,  plant}) => {
               <input
                 className='w-full px-4 py-3 text-gray-800 border border-lime-300 focus:outline-lime-500 rounded-md bg-white'
                 name='name'
-                defaultValue={plant?.name}
+                defaultValue={plants?.name}
                 id='name'
                 type='text'
                 placeholder='Plant Name'
@@ -29,7 +32,7 @@ const UpdatePlantForm = ({handleUpdatePlant,  plant}) => {
               </label>
               <select
                 required
-                defaultValue={plant?.category}
+                defaultValue={plants?.category}
                 className='w-full px-4 py-3 border-lime-300 focus:outline-lime-500 rounded-md bg-white'
                 name='category'
               >
@@ -47,7 +50,7 @@ const UpdatePlantForm = ({handleUpdatePlant,  plant}) => {
 
               <textarea
                 id='description'
-                defaultValue={plant?.description}
+                defaultValue={plants?.description}
                 placeholder='Write plant description here...'
                 className='block rounded-md focus:lime-300 w-full h-32 px-4 py-3 text-gray-800  border border-lime-300 bg-white focus:outline-lime-500 '
                 name='description'
@@ -66,7 +69,7 @@ const UpdatePlantForm = ({handleUpdatePlant,  plant}) => {
                   className='w-full px-4 py-3 text-gray-800 border border-lime-300 focus:outline-lime-500 rounded-md bg-white'
                   name='price'
                   id='price'
-                  defaultValue={plant?.price}
+                  defaultValue={plants?.price}
                   type='number'
                   placeholder='Price per unit'
                   required
@@ -82,7 +85,7 @@ const UpdatePlantForm = ({handleUpdatePlant,  plant}) => {
                   className='w-full px-4 py-3 text-gray-800 border border-lime-300 focus:outline-lime-500 rounded-md bg-white'
                   name='quantity'
                   id='quantity'
-                  defaultValue={plant?.quantity}
+                  defaultValue={plants?.quantity}
                   type='number'
                   placeholder='Available quantity'
                   required
@@ -93,29 +96,46 @@ const UpdatePlantForm = ({handleUpdatePlant,  plant}) => {
             <div className=' p-4  w-full  m-auto rounded-lg flex-grow'>
               <div className='file_upload px-5 py-3 relative border-4 border-dotted border-gray-300 rounded-lg'>
                 <div className='flex flex-col w-max mx-auto text-center'>
-                  <label>
-                    <input
-                      className='text-sm cursor-pointer w-36 hidden'
-                      type='file'
-                      name='image'
-                      id='image'
-                      accept='image/*'
-                      hidden
-                    />
-                    <div className='bg-lime-500 text-white border border-gray-300 rounded font-semibold cursor-pointer p-1 px-3 hover:bg-lime-500'>
-                      Upload Image
-                    </div>
-                  </label>
-                </div>
+                                 <label>
+                                   <input
+                                   onChange={(e)=>setUpdateImage({image:e.target.files[0], url: URL.createObjectURL(e.target.files[0])})}
+                                     className='text-sm cursor-pointer w-36 hidden'
+                                     type='file'
+                                     name='image'
+                                     id='image'
+                                     accept='image/*'
+                                     hidden
+                                   />
+                                   <div className='bg-lime-500 text-white border border-gray-300 rounded font-semibold cursor-pointer p-1 px-3 hover:bg-lime-500'>
+                                   {/* {updateImage?.image?.name} */}
+                                   {sortImageName(updateImage?.image)}
+                                   </div>
+                                  
+                                 </label>
+                                 
+                               </div>
               </div>
             </div>
-
+            {
+             updateImage && updateImage?.image?.size && (
+              <div className="flex gap-10 items-center">
+                <img className="w-14" src={updateImage.url} alt="" />
+                <p>Image Size:  {updateImage?.image?.size} KB</p>
+                </div>
+             )
+                
+             
+            }
             {/* Submit Button */}
             <button
               type='submit'
               className='w-full p-3 mt-5 text-center font-medium text-white transition duration-200 rounded shadow-md bg-lime-500 '
             >
-              Update Plant
+              {loading ? (
+                                          <TbFidgetSpinner className='animate-spin m-auto' />
+                                        ) : (
+                                          'Save & Continue'
+                                        )}
             </button>
           </div>
         </div>
@@ -126,7 +146,7 @@ const UpdatePlantForm = ({handleUpdatePlant,  plant}) => {
 
 UpdatePlantForm.propTypes = {
   handleUpdatePlant: PropTypes.func,
-  plant :PropTypes.object
+  plants :PropTypes.object
  
 }
 export default UpdatePlantForm
